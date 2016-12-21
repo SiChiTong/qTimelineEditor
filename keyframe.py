@@ -8,9 +8,9 @@ Created on Tue Dec 13 16:52:53 2016
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-class KeyFrameItem(self,QGraphicsPixmapItem):
+class KeyFrameItem(QGraphicsPixmapItem):
     
-    self.KEYFRAMEPIXMAP = ':/images/keframe.png'
+    KEYFRAMEPIXMAP = './images/keyframe.png'
     
     def __init__(self):
         super(KeyFrameItem, self).__init__(parent = None, scene = None)
@@ -19,7 +19,7 @@ class KeyFrameItem(self,QGraphicsPixmapItem):
         self.setCacheMode(QGraphicsPixmapItem.DeviceCoordinateCache)
         
     def mouseMoveEvent(self, event):
-        self.setPos(snap(e.scenePos()))
+        self.setPos(snapP(event.scenePos()))
     
     
     #private function 1

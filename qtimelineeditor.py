@@ -12,12 +12,12 @@ from keyframe import KeyFrameItem
 class QTimelineEditor(QGraphicsView):
     DEFAULTFRAMECOUNT = 60
     FRAMESIZE = QSize(8, 20)  #(height, width)
-    BACKGROUNDPIXMAPPATH = ':/images/background.png'
+    BACKGROUNDPIXMAPPATH = './images/background.png'
     TEXT_ADDKEYFRAME = "Add keyframe"
     TEXT_REMOVEKEYFRAME = "Remove keyframe"
     
-    def __init__(self, parent = None):
-        super(QTimelineEditor, self).__init__(scene = QGraphicsScene())
+    def __init__(self, scene ,parent = None):
+        super(QTimelineEditor, self).__init__(scene)
         self.m_keyFrames = []
         self.m_isDragging = False
         self.m_startFrame = 0
@@ -83,7 +83,7 @@ class QTimelineEditor(QGraphicsView):
     # @param QPainter painter
     # @param QRecF rect
     def drawBackground(self, painter, rect):
-        QGraphicsView.drawBackground(painter, rect.intersected(self.sceneRect()))
+        super(QTimelineEditor, self).drawBackground(painter, rect.intersected(self.sceneRect()))
     
     # implemented virtual method for protected classes
     # @param QContextMenuEvent event
@@ -95,14 +95,14 @@ class QTimelineEditor(QGraphicsView):
     def mousePressEvent(self, event):
         if event.isAccepted():
             self.m_isDragging = True
-            self.m_startFrame = frameAt(event.pos())
+            self.m_startFrame = self.frameAt(event.pos())
             
     # implemented virtual method for protected classes
     # @param QMouseEvent event
     def mouseReleaseEvent(self, event):
        if self.m_isDragging:
-           destFrame = frameAt(event.pos())
-           if self.m_startFrame != destFrame and replaceKeyFrame(self.m_startFrame, destFrame):
+           destFrame = self.frameAt(event.pos())
+           if self.m_startFrame != destFrame and self.replaceKeyFrame(self.m_startFrame, destFrame):
                #exchange conditions
                self.replaceItem(self.m_startFrame, destFrame)
                
@@ -130,7 +130,7 @@ class QTimelineEditor(QGraphicsView):
     
     # internal function for the class
     def createItem(self, frame):
-        self.deleteItem(frame)
+        #self.deleteItem(frame)
         
         item = KeyFrameItem()
         item.setPos(frame * self.FRAMESIZE.width(), 0)
@@ -154,5 +154,18 @@ class QTimelineEditor(QGraphicsView):
         self.deleteItem(to)
         item = self.m_keyFrames.pop(origin)
         self.m_keyFrames.insert(to, item)
+
+
+if __name__ == '__main__':
+    import sys
+    app = QApplication(sys.argv)
+    scene = QGraphicsScene(-2000, 2000, 4000, 4000)
+    timelineEditor = QTimelineEditor(scene)
+    keyFrames = [15, 20, 23, 34]
     
-    
+    for i in range(10):
+        keyFrame = i
+        keyFrames.append(keyFrame)
+    timelineEditor.setKeyFrames(keyFrames)
+    timelineEditor.show()  
+    sys.exit(app.exec_())  
